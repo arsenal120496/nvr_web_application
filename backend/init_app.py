@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from routes.camera_routes import camera_page
-from routes.manager_routes import manager_page
+from routes.camera import camera_page
+from routes.manager import manager_page
 from flask_migrate import Migrate
 
 def set_config(app):
