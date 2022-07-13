@@ -3,7 +3,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database/database.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     CORS_HEADERS = 'Content-Type'
     SESSION_COOKIE_SECURE = True
 
@@ -16,7 +16,7 @@ class DevelopmentConfig(Config):
     # interactive debugger will be shown for unhandled exceptions
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database/database.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     CORS_HEADERS = 'Content-Type'
     SESSION_COOKIE_SECURE = False
 
@@ -24,7 +24,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database/database.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     CORS_HEADERS = 'Content-Type'
     SESSION_COOKIE_SECURE = False
 
