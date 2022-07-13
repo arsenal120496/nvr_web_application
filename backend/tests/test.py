@@ -1,5 +1,3 @@
-import sys
-sys.path.append('C:\\Users\\vinhh\\Desktop\\frigatecamera\\frigate-camera\\backend')
 from app import app
 import unittest
 class FlaskTest(unittest.TestCase):
