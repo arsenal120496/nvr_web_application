@@ -31,4 +31,13 @@ def change_camera_url(object, target_url):
     update_item.url = target_url
     db.session.commit()
 
-    
+def add_camera_service():
+    from app import db 
+    from models import Camera
+    testing_object = Camera(camera_name="camera1", rtsp_link="www.abc.com")
+    add_to_database(testing_object)
+
+def query_camera_service(id):
+    from models import Camera
+    query_item = Camera.query.get_or_404(id)
+    return query_item
