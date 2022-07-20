@@ -1,3 +1,7 @@
+from sqlalchemy.inspection import inspect
+from flask import jsonify
+from flask_api import status
+
 # function that adds the input object to the database
 def add_to_database(object):
     from app import db
@@ -31,13 +35,49 @@ def change_camera_url(object, target_url):
     update_item.url = target_url
     db.session.commit()
 
-def add_camera_service():
-    from app import db 
+# function that return the list of all camera objects currently in the database
+def get_database():
     from models import Camera
-    testing_object = Camera(camera_name="camera1", rtsp_link="www.abc.com")
-    add_to_database(testing_object)
+    all_camera = Camera.query.all()
+    camera_list = []
+    for i in range(len(all_camera)):
+        camera_dictionary = {}
+        for field in [c.key for c in inspect(all_camera[i]).mapper.column_attrs]:
+            data = all_camera[i].__getattribute__(field)
+            camera_dictionary[field] = data
+            camera_list.append(camera_dictionary)
+    camera_list = list({(v['camera_name'], v['rtsp_url']):v for v in camera_list}.values())
+    return camera_list
 
+# function that add the input camera object to database
+def add_camera_service(camera_object):
+    from models import Camera
+    # check in case camera object passed in from front end is an empty object (NoneType)
+    try:
+        camera_name = camera_object['camera_name']
+        rtsp_url = camera_object['rtsp_url']
+    except:
+        return jsonify({"message": "Camera object passed in value is None"}), status.HTTP_404_NOT_FOUND
+    camera_to_add = Camera(camera_name=camera_name, rtsp_url=rtsp_url)
+    # check the uniqueness of camera name and its rtsp url
+    camera_name_count = Camera.query.filter_by(camera_name=camera_name).count()
+    camera_url_count = Camera.query.filter_by(rtsp_url=rtsp_url).count()
+    if camera_name_count == 0 and camera_url_count == 0:
+        add_to_database(camera_to_add)
+        return jsonify({"message": "camera added successfully"}), status.HTTP_200_OK
+    else: 
+        return jsonify({"message": "fail to add camera"}), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+# function that returns the information of the camera object based on input id 
 def query_camera_service(id):
     from models import Camera
-    query_item = Camera.query.get_or_404(id)
-    return query_item
+    # this replace get_or_404() method
+    try: 
+        query_item = Camera.query.get(id)
+    except:
+        return jsonify({"message": "queried camera not existed"}), status.HTTP_404_NOT_FOUND
+    converted_item = {}
+    for field in [c.key for c in inspect(query_item).mapper.column_attrs]:
+        data = query_item.__getattribute__(field)     
+        converted_item[field] = data
+    return converted_item
