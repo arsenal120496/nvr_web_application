@@ -13,14 +13,27 @@ def home():
 # tested with postman (succesfully added json data to database)
 @camera_page.route('/addCamera', methods=["POST"])
 def add_camera():
-    return add_camera_service(request.json)
+    camera_object = request.json
+    camera_name = camera_object['camera_name']
+    rtsp_url = camera_object['rtsp_url']
+    user_id = camera_object['user_id']
+    if (camera_name is not None) and (rtsp_url is not None) and (user_id is not None):
+        add_camera_status = add_camera_service(user_id, camera_name, rtsp_url)
+    else:
+        return Response(json.dumps({"message": "camera object is NoneType"}), status=404, mimetype='application/json')
+    # chỗ này em cho 1 cái else rồi return response 404 not found được ko a
+    return add_camera_status
 
 # return json data format of camera information depending on id to UI
 @camera_page.route('/query/<id>', methods=["GET"])
 def query_camera(id):  
-    return json.dumps(query_camera_service(id))
+    query_result = query_camera_service(id)
+    json_result = json.dumps(query_result)
+    return json_result
     
 # return json data format of list of all cameras information 
 @camera_page.route('/getList', methods=["GET"])
 def get_list():
-    return json.dumps(get_database())
+    database_list = get_database()
+    database_json = json.dumps(database_list)
+    return database_json
