@@ -21,7 +21,6 @@ def add_camera():
         add_camera_status = add_camera_service(user_id, camera_name, rtsp_url)
     else:
         return Response(json.dumps({"message": "camera object is NoneType"}), status=404, mimetype='application/json')
-    # chỗ này em cho 1 cái else rồi return response 404 not found được ko a
     return add_camera_status
 
 # return json data format of camera information depending on id to UI
