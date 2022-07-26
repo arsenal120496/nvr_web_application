@@ -1,43 +1,56 @@
-from flask import jsonify, Response, json
-
 # function that adds the input object to the database
 def add_to_database(object):
-    from app import db
-    db.session.add(object)
-    db.session.commit()
+    try: 
+        from app import db
+        db.session.add(object)
+        db.session.commit()
+    except Exception as err:
+        return {"message": "fail to add camera object, err {}".format(err)}
 
 # function that deletes the input object to the database
 def delete_from_database(object):
-    from app import db 
-    from models import Camera
-    item_id = object.camera_id
-    delete_item = Camera.query.get_or_404(item_id)
-    db.session.delete(delete_item)
-    db.session.commit()
-
+    try:
+        from app import db 
+        from models import Camera
+        item_id = object.camera_id
+        delete_item = Camera.query.get(item_id)
+        db.session.delete(delete_item)
+        db.session.commit()
+    except Exception as err:
+        return {"message": "fail to delete camera object, err {}".format(err)}
+    
 # function that change the input object's camera name to target name
 def change_camera_name(object, target_name):
-    from app import db
-    from models import Camera
-    item_id = object.camera_id
-    update_item = Camera.query.get_or_404(item_id)
-    update_item.camera_name = target_name
-    db.session.commit()
+    try: 
+        from app import db
+        from models import Camera
+        item_id = object.camera_id
+        update_item = Camera.query.get(item_id)
+        update_item.camera_name = target_name
+        db.session.commit()
+    except Exception as err:
+        return {"message": "fail to update camera object, err {}".format(err)}
 
 # function that change the input object's camera url to target url
 def change_camera_url(object, target_url):
-    from app import db
-    from models import Camera
-    item_id = object.camera_id
-    update_item = Camera.query.get_or_404(item_id)
-    update_item.url = target_url
-    db.session.commit()
+    try: 
+        from app import db
+        from models import Camera
+        item_id = object.camera_id
+        update_url = Camera.query.get(item_id)
+        update_url.rtsp_url = target_url
+        db.session.commit()
+    except Exception as err:
+        return {"message": "fail to update camera's rtsp url, err {}".format(err)}
 
 # function that return the list of all camera objects currently in the database
 def get_database():
-    from models import Camera
-    camera_list = Camera.retrieveList()
-    return camera_list
+    try:
+        from models import Camera
+        camera_list = Camera.retrieveList()
+        return camera_list
+    except Exception as err:
+        return {"message": "fail to retrive camera list from database, err {}".format(err)}
 
 # function that add the input camera object to database
 def add_camera_service(user_id, camera_name, rtsp_url):
@@ -48,16 +61,13 @@ def add_camera_service(user_id, camera_name, rtsp_url):
         # check the uniqueness of camera name and its rtsp url
         camera_name_count = Camera.query.filter_by(camera_name=camera_name).count()
         camera_url_count = Camera.query.filter_by(rtsp_url=rtsp_url).count()
-        # chỗ này if với else để check nó không bị trùng trong database nên phải return 2 cái trong 
-        # block try được ko a, hay bắt buộc chỉ có 1 return statement trong block try
         if camera_name_count == 0 and camera_url_count == 0:
             add_to_database(camera_to_add)
-            return Response(json.dumps({"message": "camera added successfully"}), status=200, mimetype='application/json')
+            return {"message": "camera added successfully"}
         else: 
-            return Response(json.dumps({"message": "fail to add camera"}), status=500, mimetype='application/json')
-
+            return {}
     except Exception as err:
-        return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype='application/json')
+        return {"message": "error {}".format(err)}
     
 
 # function that returns the information of the camera object based on input id 
@@ -66,7 +76,6 @@ def query_camera_service(id):
     try: 
         query_camera = Camera.retrieveCamera(id)
         return query_camera
-    except:
-        return Response(json.dumps({"message": "queried camera not existed"}), status=404, mimetype='application/json')
-
+    except Exception as err:
+        return {"message": "error {}".format(err)}
     
