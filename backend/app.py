@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from init_app import init_db, init_blueprint, set_config
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
 from flask_migrate import Migrate
 
 app = Flask(__name__)
