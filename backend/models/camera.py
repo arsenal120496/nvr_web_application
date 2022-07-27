@@ -33,18 +33,14 @@ class Camera(db.Model):
         except Exception as err:
             return {"message": "error {}".format(err)}    
 
-    def update(id):
+    def update(id, updating_item):
         try:
-            update_item = Camera.query.get(id).first()
-            db.session.delete(update_item)
+            object = Camera.query.get(id)
+            object.user_id = updating_item['user_id']
+            object.camera_name = updating_item['camera_name']
+            object.rtsp_url = updating_item['rtsp_url']
             db.session.commit()
-            camera_name = request.json['camera_name']
-            rtsp_url = request.json['rtsp_url']
-            user_id = request.json['user_id']
-            new_item = Camera(camera_id=id, user_id=user_id, camera_name=camera_name, rtsp_url=rtsp_url)
-            db.session.add(new_item)
-            db.session.commit()
-            return new_item
+            return {"message": "item updated successfully"}
         except Exception as err:    
             return {"message": "error {}".format(err)}
 
