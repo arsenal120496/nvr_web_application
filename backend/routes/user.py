@@ -17,7 +17,7 @@ def add_user():
     try: 
         user_object = request.json
         username = user_object['username']
-        password = user_object['password_hash']
+        password = user_object['password']
         email = user_object['email']
         # check if the json data passed in from UI is not None 
         if (username is not None) and (password is not None) and (email is not None):
@@ -60,29 +60,21 @@ def authenticator():
     try: 
         user_object = request.json
         username = user_object['username']
-        password = user_object['password_hash']
+        password = user_object['password']
         email = user_object['email']
         # check if the json data passed in from UI is not None 
         if (username is not None) and (password is not None) and (email is not None):
-            if(verify_service(username, password, email) != {}):
-                authenticated_object = verify_service(username,password,email)
-                return Response(json.dumps(authenticated_object), status=200, mimetype='application/json')
+            if(verify_service(username, password, email)[0]):
+                verify_service_status = verify_service(username, password, email)[1]
+                return Response(json.dumps(verify_service_status), status=200, mimetype='application/json')
             # check if the User object already exist in the database
             else:
-                return Response(json.dumps({"message": "invalid account credentials"}), status=404, mimetype='application/json')
+                verify_service_status = verify_service(username, password, email)[1]
+                return Response(json.dumps(verify_service_status), status=404, mimetype='application/json')
         else:
             return Response(json.dumps({"message": "User object is NoneType"}), status=404, mimetype='application/json')
     except Exception as err:
         return Response(json.dumps({"message": "fail to check User account's credentials, error {}".format(err)}), status=404, mimetype='application/json')
 
-@user_page.route("/update/<id>", methods=["POST"])
-def update(id):
-    try:
-        user_object = request.json
-        print(user_object)
-        updated_object = update_service(id, user_object)
 
-        return updated_object
-    except Exception as err:
-        return Response(json.dumps({"message": "fail to update user account information, err {}".format(err)}), status=404, mimetype='application/json')
 
