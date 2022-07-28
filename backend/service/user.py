@@ -22,17 +22,12 @@ def delete_from_database(object):
 
 # function that return the list of all user objects currently in the database
 def get_database():
-    from models import User
-    all_users = User.query.all()
-    user_list = []
-    for i in range(len(all_users)):
-        user_dictionary = {}
-        for field in [c.key for c in inspect(all_users[i]).mapper.column_attrs]:
-            data = all_users[i].__getattribute__(field)
-            user_dictionary[field] = data
-            user_list.append(user_dictionary)
-    user_list = list({(v['username'], v['password_hash'], v['email']):v for v in user_list}.values())
-    return user_list
+    try:
+        from models import User
+        user_list = User.retrieveList()
+        return user_list
+    except Exception as err:
+        return {"message": "fail to retrieve user list from database, err {}".format(err)}
 
 # function that add the input user object to database (for registration)
 def add_user_service(username, password, email):
@@ -67,33 +62,22 @@ def query_user_service(id):
 # function that check whether the input requirements are valid
 def verify_service(username, password, email):
     from models import User
-    from passlib.hash import sha256_crypt
     try: 
-        print("đây là username: " + username)
-        print(type(username))
-        print("đây là password: " + password)
-        print(type(password))
-        print("đây là email: "+ email)
-        print(type(email))
-        print("đây là encrypted password:" + sha256_crypt.encrypt(password))
-        encrypted = sha256_crypt.encrypt(password)
-        item = User.query.filter_by(username=username, password=encrypted, email=email).first()
-        # status = item.verify_password(password)
-        print(item)
-        # print(status)
-    #     if (query_id.verify_password(password)):
-    #         return query_id
-        return {}
+        # query based on username and email
+        item = User.query.filter_by(username=username,email=email).first()
+        # if account exist based on username and email, validate its password
+        if (item is not None):
+            if(item.verify_password(password)):
+                # return message indicate account has been verified if the password is validated
+                return (True, {"message": "account verified successfully"})
+            else:
+                return (False, {"message": "incorrect password"})
+        else:
+            return (False, {"message": "username or email not existed"})
     except Exception as err:
         return {"message": "error {}".format(err)}
 
-def update_service(id, user_object):
-    from models import User
-    try:
-        new_object = User.update(id, user_object)
-        return new_object
-    except Exception as err:
-        return {"message": "error {}".format(err)}
+
 
 
 
