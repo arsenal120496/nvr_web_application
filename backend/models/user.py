@@ -1,8 +1,7 @@
 from app import db 
-from werkzeug.security import generate_password_hash, check_password_hash
-from requests import request
 from sqlalchemy.inspection import inspect
 from passlib.hash import sha256_crypt
+from configs.config import Config
 
 
 class User(db.Model):
@@ -17,14 +16,14 @@ class User(db.Model):
     
     @password.setter 
     def password(self, password):
-        self.password_hash = sha256_crypt.encrypt(password)
+        self.password_hash = sha256_crypt.encrypt(password + Config.SECRET_KEY)
 
     def verify_password(self,password):
-        return sha256_crypt.verify(self.password_hash, password)
+        return sha256_crypt.verify(password + Config.SECRET_KEY, self.password_hash)
 
-    def __init__(self, username, password_hash, email):
+    def __init__(self, username, password, email):
         self.username = username
-        self.password = password_hash
+        self.password = password
         self.email = email
 
     def retrieveList():
