@@ -14,9 +14,7 @@ def set_config(app):
 def init_db(app):
     # initialize the database and setup models
     from app import db  
-    from models import Camera
-    from models import Record
-    from models import User
+    from models import Camera, Record, User
     db.init_app(app)
     with app.app_context():
         db.create_all()
