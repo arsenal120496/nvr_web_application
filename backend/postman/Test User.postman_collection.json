@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "d2b5e333-64e5-4d17-a0c1-0bf3317127f4",
+		"name": "Test User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22083599"
+	},
+	"item": [
+		{
+			"name": "add User account not existed",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/addUser",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"addUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add User account already existed",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/addUser",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"addUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query index 0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/query/0",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"query",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query index 1 (existed user account)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/query/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"query",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query index 100 (no user account)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/query/100",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"query",
+						"100"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getList",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/getList",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticator (match with item in database)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/authenticator",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticator (not match username in database)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test4\", \"password\": \"123\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/authenticator",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticator (not match email in database)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123\", \"email\": \"test4@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/authenticator",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticator (not match password)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123565\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/authenticator",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticator (happy case)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test3\", \"password\": \"123\", \"email\": \"test3@gmail.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/authenticator",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
