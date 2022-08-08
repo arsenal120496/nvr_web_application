@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, Response, stream_with_context
 from service.camera import *
 import json
 
@@ -53,3 +53,16 @@ def get_list():
         return Response(database_json, status=200, mimetype='application/json')
     except Exception as err:
         return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype="application/json")
+
+@camera_page.route('/rtmp', methods=["GET"])
+def generate_rtmp():
+    try: 
+        import subprocess
+        cmd = "ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -fflags +genpts -i rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4 -c copy -f flv rtmp://localhost/live/test -r 5 -s 1280x720 -f rawvideo -pix_fmt yuv420p pipe: "
+        # cmd = 'ffplay rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4'
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        # retrieve_rtmp(p)
+        return Response(retrieve_rtmp(p), mimetype='multipart/x-mixed-replace; boundary=frame')
+    except Exception as err:
+        return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype='application/json')
+    

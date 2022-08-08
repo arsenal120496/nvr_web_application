@@ -1,4 +1,8 @@
 # function that adds the input object to the database
+from asyncio.subprocess import STDOUT
+from tracemalloc import start
+import cv2
+
 def add_to_database(object):
     try: 
         from app import db
@@ -50,7 +54,7 @@ def get_database():
         camera_list = Camera.retrieveList()
         return camera_list
     except Exception as err:
-        return {"message": "fail to retrive camera list from database, err {}".format(err)}
+        return {"message": "fail to retrieve camera list from database, err {}".format(err)}
 
 # function that add the input camera object to database
 def add_camera_service(user_id, camera_name, rtsp_url):
@@ -78,4 +82,32 @@ def query_camera_service(id):
         return query_camera
     except Exception as err:
         return {"message": "error {}".format(err)}
+
+def retrieve_rtmp(p):
+    count = 0
+    # while True:
+    #     raw_img = p.stdout
+    #     print("raw_img", raw_img)
+    #     print(" type raw_img", type(raw_img))
+    #     _, jpg = cv2.imencode(".jpg", raw_img, [int(cv2.IMWRITE_JPEG_QUALITY),70])
+    #     yield (b'--frame\r\n'
+    #            b'Content-Type: image/jpeg\r\n\r\n' + jpg.tobytes() + b'\r\n\r\n')
+    # cmd = "ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -fflags +genpts -i rtsp://tic-viewer:20202021%40Tm%40@192.168.85.107/Streaming/Channels/101/?transportmode=unicast -c copy -f flv rtmp://localhost/live/test -r 5 -s 1280x720 -f rawvideo -pix_fmt yuv420p pipe: "
+    for data in iter(p.stdout.readline, ''):
+        count+=1
+        _, jpg = cv2.imencode(".jpg", data, [int(cv2.IMWRITE_JPEG_QUALITY),70])
+        cv2.imwrite("C:\\Users\\vinhh\\Desktop\\nvr_web_application\\backend\\images\\id_{}".format(count), jpg)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + jpg.tobytes() + b'\r\n\r\n')
+        # print("data", data)
+        
+
+    # while True:
+    #     print("đây là out.stdout", out.stdout.readline)
+    #     print(type(out.stdout))
+    # return out.stdout 
+    # while True:
+
+    # for data in iter(p.stdout.readline, b''):
+
     
