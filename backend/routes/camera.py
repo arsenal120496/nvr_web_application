@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response, stream_with_context
+from flask import Blueprint, request, Response, stream_with_context, make_response
 from service.camera import *
 import json
 
@@ -56,13 +56,26 @@ def get_list():
 
 @camera_page.route('/rtmp', methods=["GET"])
 def generate_rtmp():
-    try: 
-        import subprocess
-        cmd = "ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -fflags +genpts -i rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4 -c copy -f flv rtmp://localhost/live/test -r 5 -s 1280x720 -f rawvideo -pix_fmt yuv420p pipe: "
+    # try: 
+        from app import camera_obj
+        # cmd = 'ffmpeg -hide_banner -loglevel warning -avoid_negative_ts make_zero -fflags +genpts+discardcorrupt -rtsp_transport tcp -stimeout 5000000 -use_wallclock_as_timestamps 1 -i rtsp://tic-viewer:20202021%40Tm%40@192.168.85.107/Streaming/Channels/101/?transportmode=unicast -c copy -f flv rtmp://localhost/live/back1 -r 5 -s 1280x720 -f rawvideo -pix_fmt yuv420p pipe: '
         # cmd = 'ffplay rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4'
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        # retrieve_rtmp(p)
-        return Response(retrieve_rtmp(p), mimetype='multipart/x-mixed-replace; boundary=frame')
-    except Exception as err:
-        return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype='application/json')
+        # p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        # cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'warning', '-avoid_negative_ts', 'make_zero', '-fflags', '+genpts+discardcorrupt', '-rtsp_transport', 'tcp', '-stimeout', '5000000', '-use_wallclock_as_timestamps', '1', '-i', 'rtsp://tic-viewer:20202021%40Tm%40@192.168.85.107/Streaming/Channels/101/?transportmode=unicast', '-c', 'copy', '-f', 'flv', 'rtmp://localhost/live/back1', '-r', '5', '-s', '1280x720', '-f', 'rawvideo', '-pix_fmt', 'yuv420p', 'pipe:']
+        # p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL, start_new_session=True)
+        result = camera_obj.get_frame()
+        ret, img = cv2.imencode(".jpg", result)
+        cv2.imwrite("./test.jpg", img)
+        response = make_response(img.tobytes())
+        response.headers["Content-Type"] = "image/jpeg"
+        return response
+        # print(result)
+        # return Response(img.tobytes(), mimetype='image/jpeg')
+    # except Exception as err:
+        # return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype='application/json')
     
+@camera_page.route('/kill', methods=["GET"])
+def kill_process():
+    from app import p
+    p.terminate()
+    return Response("")
