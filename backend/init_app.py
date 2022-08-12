@@ -26,3 +26,16 @@ def init_blueprint(app):
         app.register_blueprint(record_page, url_prefix='/record')
         app.register_blueprint(user_page, url_prefix='/user')
 
+class CameraObject:
+    def __init__(self):
+        self.queue = [20]
+    
+    def update_frame(self, frame):
+        print("update frame")
+        if len(self.queue) > 20:
+            self.queue.pop(0) 
+        self.queue.append(frame)
+    
+    def get_frame(self):
+        return self.queue[0]
+
