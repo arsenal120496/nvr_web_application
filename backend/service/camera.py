@@ -1,10 +1,9 @@
 import logging
+from database.database_manipulator import Database
 # function that adds the input object to the database
 def add_to_database(object):
     try: 
-        from app import db
-        db.session.add(object)
-        db.session.commit()
+        Database.add(object)
         logging.info("camera added successfully")
     except Exception as err:
         logging.warning("fail to add camera object, err {}".format(err))
@@ -12,12 +11,10 @@ def add_to_database(object):
 # function that deletes the input object to the database
 def delete_from_database(object):
     try:
-        from app import db 
         from models import Camera
         item_id = object.camera_id
         delete_item = Camera.query.get(item_id)
-        db.session.delete(delete_item)
-        db.session.commit()
+        Database.delete(delete_item)
         logging.info("camera deleted successfully")
     except Exception as err:
         logging.warning("fail to delete camera object, err {}".format(err))
@@ -25,12 +22,11 @@ def delete_from_database(object):
 # function that change the input object's camera name to target name
 def change_camera_name(object, target_name):
     try: 
-        from app import db
         from models import Camera
         item_id = object.camera_id
         update_item = Camera.query.get(item_id)
         update_item.camera_name = target_name
-        db.session.commit()
+        Database.save()
         logging.info("camera's name updated successfully")
     except Exception as err:
         logging.warning("fail to update camera's name, err{}".format(err))
@@ -38,12 +34,11 @@ def change_camera_name(object, target_name):
 # function that change the input object's camera url to target url
 def change_camera_url(object, target_url):
     try: 
-        from app import db
         from models import Camera
         item_id = object.camera_id
         update_url = Camera.query.get(item_id)
         update_url.rtsp_url = target_url
-        db.session.commit()
+        Database.save()
         logging.info("camera's url updated successfully")
     except Exception as err:
         logging.warning("fail to update camera's url, err{}".format(err))
