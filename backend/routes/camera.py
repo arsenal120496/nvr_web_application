@@ -24,7 +24,7 @@ def add_camera():
             add_camera_status = add_camera_service(user_id, camera_name, rtsp_url)
             # check if the Camera object already exist in the database
             if add_camera_status == {}:
-                return Response(json.dumps({"message": "fail to add camera, already exist in the database"}), status=412, mimetype='application/json')
+                return Response(json.dumps({"message": "fail to add camera, already exist in the database"}), status=412, mimetype='application/json') 
             else:
                 return Response(json.dumps(add_camera_status), status=200, mimetype='application/json')
         else:
