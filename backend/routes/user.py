@@ -54,7 +54,6 @@ def get_list():
     except Exception as err:
         return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype="application/json")
 
-
 @user_page.route('/authenticator', methods=["POST"])
 def authenticator():
     try: 
