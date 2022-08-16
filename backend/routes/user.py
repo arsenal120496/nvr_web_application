@@ -1,5 +1,5 @@
 from flask import Blueprint, request, Response
-from service.user import *
+from service.user import UserService
 import json
 
 user_page = Blueprint('user_page', __name__)
@@ -13,7 +13,7 @@ def home():
 # json format: {username: "abc", password_hash:"123" (encrypted), email:"abc@gmail.com"}
 # tested with postman (succesfully added json data to database) (for registration)
 @user_page.route("/addUser", methods=["POST"])
-def add_user():
+def add_user_account():
     try: 
         user_object = request.json
         username = user_object['username']
@@ -21,7 +21,7 @@ def add_user():
         email = user_object['email']
         # check if the json data passed in from UI is not None 
         if (username is not None) and (password is not None) and (email is not None):
-            add_user_status = add_user_service(username, password, email)
+            add_user_status = UserService.add_user(username, password, email)
             # check if the User object already exist in the database
             if add_user_status == {}:
                 return Response(json.dumps({"message": "fail to add user account, already exist in the database"}), status=412, mimetype='application/json')
@@ -34,9 +34,9 @@ def add_user():
 
 # return json data format of user account information depending on id to UI
 @user_page.route('/query/<id>', methods=["GET"])
-def query_user(id):  
+def query_user_account(id):  
     try:   
-        query_result = query_user_service(id)
+        query_result = UserService.query_user(id)
         if (query_result is None or query_result == {}):
             return Response(json.dumps({"message": "no User object at given id"}),status=203, mimetype='application/json')
         else: 
@@ -48,7 +48,7 @@ def query_user(id):
 @user_page.route('/getList', methods=["GET"])
 def get_list():
     try:
-        database_list = get_database()
+        database_list = UserService.get_database()
         database_json = json.dumps(database_list)
         return Response(database_json, status=200, mimetype='application/json')
     except Exception as err:
@@ -63,13 +63,13 @@ def authenticator():
         email = user_object['email']
         # check if the json data passed in from UI is not None 
         if (username is not None) and (password is not None) and (email is not None):
-            if(verify_service(username, password, email)[0]):
-                verify_service_status = verify_service(username, password, email)[1]
-                return Response(json.dumps(verify_service_status), status=200, mimetype='application/json')
+            if(UserService.validate_user_data(username, password, email)[0]):
+                validate_user_data_status = UserService.validate_user_data(username, password, email)[1]
+                return Response(json.dumps(validate_user_data_status), status=200, mimetype='application/json')
             # check if the User object already exist in the database
             else:
-                verify_service_status = verify_service(username, password, email)[1]
-                return Response(json.dumps(verify_service_status), status=404, mimetype='application/json')
+                validate_user_data_status = UserService.validate_user_data(username, password, email)[1]
+                return Response(json.dumps(validate_user_data_status), status=404, mimetype='application/json')
         else:
             return Response(json.dumps({"message": "User object is NoneType"}), status=404, mimetype='application/json')
     except Exception as err:
