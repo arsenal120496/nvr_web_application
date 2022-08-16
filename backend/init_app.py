@@ -1,6 +1,6 @@
 from routes.camera import camera_page
 from routes.record import record_page
-# from routes.user import user_page
+from routes.user import user_page
 import logging
 from logging.handlers import RotatingFileHandler
 def set_config(app):
@@ -15,9 +15,10 @@ def set_config(app):
 def init_db(app):
     # initialize the database and setup models
     from app import db  
+    from models import Camera, Record, User
     from models import Camera
     from models import Record
-    # from models import User
+    from models import User
     db.init_app(app)
     with app.app_context():
         db.create_all()
@@ -27,7 +28,7 @@ def init_blueprint(app):
     with app.app_context():
         app.register_blueprint(camera_page, url_prefix='/camera')
         app.register_blueprint(record_page, url_prefix='/record')
-        # app.register_blueprint(user_page, url_prefix='/user')
+        app.register_blueprint(user_page, url_prefix='/user')
 
 def config_log(app):
     # setup logging config file for service files tracking history
