@@ -1,23 +1,25 @@
 from sqlalchemy.inspection import inspect
+import logging
+from database.database_manipulator import Database
 # function that adds the input object to the database
 def add_to_database(object):
     try: 
-        from app import db
-        db.session.add(object)
-        db.session.commit()
+        Database.add(object)
+        logging.info("User account added to database successfully")
     except Exception as err:
+        logging.warning("Fail to add user account to the database, err {}".format(err))
         return {"message": "fail to add User object, err {}".format(err)}
 
 # function that deletes the input object to the database
 def delete_from_database(object):
     try:
-        from app import db 
         from models import User
         item_id = object.user_id
         delete_item = User.query.get(item_id)
-        db.session.delete(delete_item)
-        db.session.commit()
+        Database.delete(delete_item)
+        logging.info("User account deleted successfully")
     except Exception as err:
+        logging.warning("Fail to delete user account from the the database, err {}".format(err))
         return {"message": "fail to delete User object, err {}".format(err)}
 
 # function that return the list of all user objects currently in the database
@@ -25,8 +27,10 @@ def get_database():
     try:
         from models import User
         user_list = User.retrieveList()
+        logging.info("Database information retrieved successfully")
         return user_list
     except Exception as err:
+        logging.warning("Fail to retrieve user list from database, err {}".format(err))
         return {"message": "fail to retrieve user list from database, err {}".format(err)}
 
 # function that add the input user object to database (for registration)
@@ -45,8 +49,10 @@ def add_user_service(username, password, email):
             return {"message": "user account added successfully"}
         # in case there has already been an account in the database
         else: 
+            logging.info("User account already existed in the database")
             return {}
     except Exception as err:
+        logging.warning("Fail to add user account to the database, err {}".format(err))
         return {"message": "error {}".format(err)}
    
 
@@ -55,8 +61,10 @@ def query_user_service(id):
     from models import User
     try: 
         query_user = User.retrieveUser(id)
+        logging.info("User account queried successfully")
         return query_user
     except Exception as err:
+        logging.warning("Fail to query user account's information, err {}".format(err))
         return {"message": "error {}".format(err)}
     
 # function that check whether the input requirements are valid
@@ -68,13 +76,17 @@ def verify_service(username, password, email):
         # if account exist based on username and email, validate its password
         if (item is not None):
             if(item.verify_password(password)):
+                logging.info("User account verified successfully")
                 # return message indicate account has been verified if the password is validated
                 return (True, {"message": "account verified successfully"})
             else:
+                logging.info("Incorrect password")
                 return (False, {"message": "incorrect password"})
         else:
+            logging.info("Username or email not existed")
             return (False, {"message": "username or email not existed"})
     except Exception as err:
+        logging.warning("Fail to verify user account, err {}".format(err))
         return {"message": "error {}".format(err)}
 
 
