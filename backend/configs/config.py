@@ -28,6 +28,5 @@ class TestingConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     CORS_HEADERS = 'Content-Type'
     SESSION_COOKIE_SECURE = False
-    SECRET_KEY = 'youngH'
 
 
