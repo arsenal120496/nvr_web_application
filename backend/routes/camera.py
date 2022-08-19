@@ -53,3 +53,20 @@ def get_list():
         return Response(database_json, status=200, mimetype='application/json')
     except Exception as err:
         return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype="application/json")
+
+@camera_page.route('/rtmp', methods=["GET"])
+def generate_rtmp():
+    try: 
+        import subprocess as sp
+        command = ['ffmpeg', '-hide_banner', '-loglevel', 
+        'warning', '-avoid_negative_ts', 'make_zero', '-fflags',
+         '+genpts+discardcorrupt', '-rtsp_transport', 'tcp', '-stimeout',
+          '5000000', '-use_wallclock_as_timestamps', '1', '-i', 
+          'rtsp://tic-viewer:20202021%40Tm%40@192.168.85.107/Streaming/Channels/101/?transportmode=unicast',
+           '-c', 'copy', '-f', 'flv', 'rtmp://localhost/live/back1', '-r', '5', '-s', 
+           '1280x720', '-f', 'rawvideo', '-pix_fmt', 'rgb24', 'pipe:']
+        pipe = sp.Popen(command, stdout = sp.PIPE, bufsize=10**8)
+        return Response(CameraService.retrieve_rtmp(pipe), status=200, mimetype="multipart/x-mixed-replace; boundary=frame")
+    except Exception as err:
+        return Response(json.dumps({"message": "error {}".format(err)}), status=404, mimetype='application/json')
+    

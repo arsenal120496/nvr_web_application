@@ -1,6 +1,6 @@
 import unittest
+from service.user import *
 from app import app
-
 
 # additional API testing in postman
 class FlaskTest(unittest.TestCase):
