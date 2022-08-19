@@ -1,5 +1,7 @@
 import logging
 from database.database_manipulator import Database
+import numpy
+import cv2
 class CameraService:
     # function that adds the input object to the database
     def add_to_database(object):
@@ -43,8 +45,7 @@ class CameraService:
             logging.info("camera's url updated successfully")
         except Exception as err:
             logging.warning("fail to update camera's url, err{}".format(err))
-=======
->>>>>>> e684a83e3014fa400279fc3b7c61399edb23157a
+
 
     # function that return the list of all camera objects currently in the database
     def get_database():
@@ -87,4 +88,14 @@ class CameraService:
         except Exception as err:
             logging.warning("fail to query camera's information, err {}".format(err))
             return {"message": "fail to query camera's information, err {}".format(err)}
+
+    def retrieve_rtmp(pipe):
+        while True:
+            raw_image = pipe.stdout.read(1280*720*3)
+            image = numpy.fromstring(raw_image, dtype='uint8')
+            image = image.reshape((720,1280,3))
+            ret, jpg = cv2.imencode(".jpg", image)
+            yield(b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + jpg.tobytes() + b"\r\n\r\n")
+
         
